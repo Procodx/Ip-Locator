@@ -1,0 +1,73 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<section class="text-center align-content-center bg-primary px-5 py-4 hro-section">
+    <div class="d-flex flex-column col-md-8 mx-auto mb-5">
+        <h2 class="text-light">IP Address Tracker</h2>
+        <form>
+            <div class="input-group input-group-lg rounded-3 w-75 mx-auto mt-3">
+                <input type="text" value="" class="form-control" asp-for="UserIp" placeholder="Search for any IP Address or Domain" aria-label="Search for any IP Address or Domain" aria-describedby="button-addon2">
+                <button class="btn btn-outline-dark" id="button-addon2"><img src="./Images/icon-arrow.svg" /></button>
+            </div>
+        </form>
+        <section class="card shadow-sm bg-white rounded-3 mt-3">
+            <div class="card-body row">
+                @if(Model.IpTracker != null)
+                {
+                    <div class="d-flex flex-column gap-3 border-end col-md-3">
+                        <p>Ip Address</p>
+                        <h3>@Model.IpTracker.Ip</h3>
+                    </div>
+                    <div class="d-flex flex-column gap-3 border-end col-md-3">
+                        <p>Location</p>
+                        <div class="d-flex flex-column">
+                            <h3>@Model.IpTracker.Location.Region, @Model.IpTracker.Location.Country</h3>
+                            <h4>@Model.IpTracker.Location.PostalCode</h4>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column gap-3 border-end col-md-3">
+                        <p>TimeZone</p>
+                        <h3>@Model.IpTracker.Location.TimeZone</h3>
+                    </div>
+                    <div class="d-flex flex-column gap-3 border-end col-md-3">
+                        <p>ISP</p>
+                        <h3>@Model.IpTracker.Isp</h3>
+                    </div>
+                }
+               
+                
+            </div>
+        </section>
+       
+    </div>
+</section>
+
+<section id="map">
+
+</section>
+
+
+
+<script>
+    var latitude = @Html.Raw(Json.Serialize(Model.IpTracker?.Location.Lat));
+    var longitude = @Html.Raw(Json.Serialize(Model.IpTracker?.Location.Lng));
+    var map = L.map('map').setView([latitude, longitude], 13);
+    var marker = L.marker([latitude, longitude]).addTo(map);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    var popup = L.popup();
+
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent("You clicked the map at " + e.latlng.toString())
+            .openOn(map);
+    }
+
+    map.on('click', onMapClick);
+</script>
